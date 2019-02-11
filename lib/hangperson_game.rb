@@ -15,7 +15,49 @@ class HangpersonGame
   def initialize(word)
     @word = word
     @guesses = ""
-    @wrong_guesses = "" 
+    @wrong_guesses = ""
+  end
+
+  def guess(letter)
+    valid = TRUE
+    if letter == '' || letter == nil
+      valid = TRUE
+      raise ArgumentError.new("Empty Guess not allowed")
+    end
+    letter.downcase!
+    if @wrong_guesses.include?(letter) || @guesses.include?(letter)
+      valid = FALSE
+    elsif !(letter =~ /[[:lower:]]/)
+      raise ArgumentError.new("Special Symbol not allowed")
+      valid = FALSE
+    elsif @word.include? (letter)
+      @guesses = @guesses + letter
+    else
+      @wrong_guesses = @wrong_guesses + letter
+    end
+    return valid
+  end
+
+  def word_with_guesses
+    progress = ""
+    @word.each_char.with_index { |c, index|
+      if @guesses.include? c
+        progress[index] = c
+      else
+        progress[index] = "-"
+      end
+    }
+    return progress
+  end
+
+  def check_win_or_lose
+    if @wrong_guesses.length < 7 && word_with_guesses == @word
+      return :win
+    elsif @wrong_guesses.length >= 7
+      return :lose
+    else
+      return :play
+    end
   end
 
   # You can test it by running $ bundle exec irb -I. -r app.rb
